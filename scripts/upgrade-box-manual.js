@@ -25,15 +25,20 @@ async function main() {
         await verify(boxV2.address, [])
     }
 
+    // Validate current version
+    const proxyBoxCurrentV = await ethers.getContractAt("BoxV2", transparentProxy.address)
+    const versionCurrentV = await proxyBoxCurrentV.version()
+    console.log(versionCurrentV.toString())
+
     // Upgrade!
     // Not "the hardhat-deploy way"
     const boxProxyAdmin = await ethers.getContract("BoxProxyAdmin")
     const transparentProxy = await ethers.getContract("Box_Proxy")
     const upgradeTx = await boxProxyAdmin.upgrade(transparentProxy.address, boxV2.address)
     await upgradeTx.wait(1)
-    const proxyBox = await ethers.getContractAt("BoxV2", transparentProxy.address)
-    const version = await proxyBox.version()
-    console.log(version.toString())
+    const proxyBoxNewV = await ethers.getContractAt("BoxV2", transparentProxy.address)
+    const versionNewV = await proxyBoxNewV.version()
+    console.log(versionNewV.toString())
     log("----------------------------------------------------")
 }
 
